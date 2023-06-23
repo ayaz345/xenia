@@ -14,14 +14,15 @@ def parallel_arg_type(value):
     ivalue = int(value)
     if ivalue < 1:
         raise argparse.ArgumentError(
-            "%s is an invalid number of processes (>= 1)" % ivalue)
+            f"{ivalue} is an invalid number of processes (>= 1)"
+        )
 
     return ivalue
 
 
 def file_type(value):
     if not os.path.isfile(value):
-        raise argparse.ArgumentError("%s is an invalid filename" % value)
+        raise argparse.ArgumentError(f"{value} is an invalid filename")
 
     return value
 
@@ -54,7 +55,7 @@ def main(argv):
     for wildcard in args.files:
         files.extend(glob.glob(wildcard))
 
-    if len(files) == 0:
+    if not files:
         print("No input files found!")
         return 1
 

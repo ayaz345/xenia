@@ -75,13 +75,12 @@ def main():
 
   if sys.platform == 'win32':
     # Append the executable extension on windows.
-    premake5_bin = premake5_bin + '.exe'
+    premake5_bin = f'{premake5_bin}.exe'
 
-  return_code = shell_call([
-      premake5_bin,
-      '--scripts=%s' % (premake_path),
-      ] + sys.argv[1:],
-      throw_on_error=False)
+  return_code = shell_call(
+      ([premake5_bin, f'--scripts={premake_path}'] + sys.argv[1:]),
+      throw_on_error=False,
+  )
 
   sys.exit(return_code)
 
@@ -121,7 +120,6 @@ def build_premake():
           ], shell=False)
   finally:
     os.chdir(cwd)
-  pass
 
 
 def clone_premake_to_internal_storage():
@@ -157,14 +155,12 @@ def has_bin(bin):
   """
   for path in os.environ["PATH"].split(os.pathsep):
     if sys.platform == 'win32':
-      exe_file = os.path.join(path, bin + '.exe')
-      if os.path.isfile(exe_file) and os.access(exe_file, os.X_OK):
-        return True
+      exe_file = os.path.join(path, f'{bin}.exe')
     else:
       path = path.strip('"')
       exe_file = os.path.join(path, bin)
-      if os.path.isfile(exe_file) and os.access(exe_file, os.X_OK):
-        return True
+    if os.path.isfile(exe_file) and os.access(exe_file, os.X_OK):
+      return True
   return None
 
 
@@ -180,12 +176,8 @@ def shell_call(command, throw_on_error=True, stdout_path=None, stderr_path=None,
   Returns:
     If throw_on_error is False the status code of the call will be returned.
   """
-  stdout_file = None
-  if stdout_path:
-    stdout_file = open(stdout_path, 'w')
-  stderr_file = None
-  if stderr_path:
-    stderr_file = open(stderr_path, 'w')
+  stdout_file = open(stdout_path, 'w') if stdout_path else None
+  stderr_file = open(stderr_path, 'w') if stderr_path else None
   result = 0
   try:
     if throw_on_error:
@@ -256,7 +248,7 @@ def import_subprocess_environment(args):
       )
   for line in variables.splitlines():
     for envvar in envvars_to_save:
-      if re.match(envvar + '=', line.lower()):
+      if re.match(f'{envvar}=', line.lower()):
         var, setting = line.split('=', 1)
         if envvar == 'path':
           setting = os.path.dirname(sys.executable) + os.pathsep + setting

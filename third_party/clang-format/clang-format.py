@@ -70,12 +70,14 @@ def main():
     lines = []
     for op in reversed(sequence.get_opcodes()):
       if op[0] not in ['equal', 'delete']:
-        lines += ['-lines', '%s:%s' % (op[3] + 1, op[4])]
+        lines += ['-lines', f'{op[3] + 1}:{op[4]}']
     if lines == []:
       return
   else:
-    lines = ['-lines', '%s:%s' % (vim.current.range.start + 1,
-                                  vim.current.range.end + 1)]
+    lines = [
+        '-lines',
+        f'{vim.current.range.start + 1}:{vim.current.range.end + 1}',
+    ]
 
   # Determine the cursor position.
   cursor = int(vim.eval('line2byte(line("."))+col(".")')) - 2
